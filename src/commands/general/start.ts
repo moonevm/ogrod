@@ -4,7 +4,6 @@ import { awaitMessage } from "../../utils/awaitMessage.ts";
 export const name = "start"
 export const description = "Initial Message"
 
-
 export async function handler(ctx: Context) {
     const message = await ctx.reply("Message:");
     const edit = (text: string) =>
