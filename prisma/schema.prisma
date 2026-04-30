@@ -23,6 +23,7 @@ model WeatherLog {
 
   summary     String
   weatherData Json
+  message     String
 
   userId String
   user   User   @relation(fields: [userId], references: [id])
