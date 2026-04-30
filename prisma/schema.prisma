@@ -11,4 +11,6 @@ model User {
   id              String @id
   userId          BigInt @unique
   latestMessageId BigInt @unique
+
+  active Boolean @default(true)
 }
