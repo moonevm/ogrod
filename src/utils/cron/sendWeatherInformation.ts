@@ -32,9 +32,10 @@ export async function sendWeatherInformation(bot: Telegraf) {
     new CronJob(
         "0 6,9,15 * * *",
         async function () {
-            const weatherData = await getWeatherData({ summarize: true });
-
             const users = await prisma.user.findMany({ where: { active: true } })
+            if (users.length == 0) return
+
+            const weatherData = await getWeatherData({ summarize: true });
 
             const latestMessageIdMap = new Map<string, number>();
 
