@@ -30,7 +30,7 @@ const uvThresholds = [
 
 export async function sendWeatherInformation(bot: Telegraf) {
     new CronJob(
-        "0 6,9,15,19 * * *",
+        "26 6,9,15,19,20 * * *",
         async function () {
             const users = await prisma.user.findMany({ where: { active: true } })
             if (users.length == 0) return
@@ -54,7 +54,7 @@ export async function sendWeatherInformation(bot: Telegraf) {
                         `${getEmojiForValue(weatherData.daily.uv_index_max[0]!, uvThresholds)}️<b>Indeks UV:</b> ${weatherData.daily.uv_index_max[0]} ${weatherData.daily.units.uv_index_max}\n\n`+
                         `${getEmojiForValue(weatherData.current.wind_speed, windThresholds)}️<b>Prędkość Wiatru:</b> ${weatherData.current.wind_speed} ${weatherData.current.units.wind_speed_10m}\n\n`+
                         `🌡️ <b>Temperatura:</b>\n\n`+
-                        `     ${getEmojiForValue(weatherData.current.temperature, temperatureThresholds)} <b>Teraz (${new Date().getHours().toString().padStart(2, "0")}:${new Date().getMinutes().toString().padStart(2, "0")}):</b> ${weatherData.current.temperature} ${weatherData.current.units.temperature_2m}\n\n` +
+                        `     ${getEmojiForValue(weatherData.current.temperature, temperatureThresholds)} <b>Teraz (${new Date().toLocaleTimeString("pl-PL", { timeZone: "Europe/Berlin", hour: "2-digit", minute: "2-digit" })}):</b> ${weatherData.current.temperature} ${weatherData.current.units.temperature_2m}\n\n` +
 
                         breakpoints.map((e) => {
                             const time = weatherData.hourly.time.indexOf(new Date(new Date().setHours(e, 0, 0, 0)).toISOString().slice(0, 16))
@@ -70,7 +70,6 @@ export async function sendWeatherInformation(bot: Telegraf) {
                             parse_mode: "HTML"
                         }
                     )
-                    console.log(message.message_id)
 
                     latestMessageIdMap.set(user.id, message.message_id)
                 } catch {
