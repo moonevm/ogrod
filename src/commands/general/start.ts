@@ -1,6 +1,6 @@
 import { Context } from "telegraf";
-import {prisma} from "../../utils/prisma.ts";
-import generateId from "../../utils/generateId.ts";
+import { prisma } from "../../utils/prisma.ts";
+import { generateId } from "../../utils/generateId.ts";
 
 export const name = "start"
 export const description = "Initial Message"

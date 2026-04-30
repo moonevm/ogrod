@@ -1,4 +1,4 @@
-export default function generateId({ prefix, separator = "-", amount = 16 }: { prefix: string, separator?: String, amount?: number }) {
+export function generateId({ prefix, separator = "-", amount = 16 }: { prefix: string, separator?: String, amount?: number }) {
     const characters = "qwertzuiopasdfghjklyxcvbnmQWERTZUIOPASDFGHJKLYXCVBNM"
     let result = ""
 
