@@ -5,7 +5,7 @@ const Promises = new Map<number, {
     reject: (reason: String) => void,
 }>()
 
-export async function awaitMessage(userId: number, timeout = 5_000): Promise<{ interaction: Context }> {
+export async function awaitMessage(userId: number, timeout = 60_000): Promise<{ interaction: Context }> {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             reject("Timeout")
