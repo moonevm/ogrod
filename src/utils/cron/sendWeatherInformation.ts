@@ -30,7 +30,7 @@ const uvThresholds = [
 
 export async function sendWeatherInformation(bot: Telegraf) {
     new CronJob(
-        "*/1 * * * *",
+        "0 6,9,15 * * *",
         async function () {
             const weatherData = await getWeatherData({ summarize: true });
 
