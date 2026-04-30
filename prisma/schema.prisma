@@ -16,3 +16,12 @@ model User {
 
   createdAt DateTime @default(now())
 }
+
+model WeatherLog {
+  id String @id
+
+  summary     String
+  weatherData Json
+
+  createedAt DateTime @default(now())
+}
