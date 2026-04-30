@@ -10,7 +10,7 @@ export interface Command {
 export const commands = new Map<string, Command>()
 
 export async function handleCommands(bot: Telegraf) {
-    const dir = path.join(__dirname, "..", "commands")
+    const dir = path.join(__dirname, "..", "..", "commands")
 
     for await (const file of new Bun.Glob("**/*.ts").scan(dir)) {
         const module: Command = await import(path.join(dir, file))
