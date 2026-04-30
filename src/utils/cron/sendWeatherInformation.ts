@@ -30,7 +30,7 @@ const uvThresholds = [
 
 export async function sendWeatherInformation(bot: Telegraf) {
     new CronJob(
-        "0 6,9,15,19 28 * *",
+        "28 6,9,15,19 * * *",
         async function () {
             const users = await prisma.user.findMany({ where: { active: true } })
             if (users.length == 0) return
