@@ -18,6 +18,7 @@ export default async function getWeatherData({ summarize = false }: { summarize?
         current: {
             units:  data.current_units,
             temperature: data.current.temperature_2m,
+            wind_speed: data.current.wind_speed_10m,
         },
         daily: {
             units: data.daily_units,
