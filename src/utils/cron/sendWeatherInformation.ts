@@ -52,7 +52,7 @@ export async function sendWeatherInformation(bot: Telegraf) {
                         `🌤️<b>Zachód Słońca:</b> ${new Date(weatherData.daily.sunset[0]!).toLocaleTimeString("pl-PL",  { hour: "2-digit", minute: "2-digit" })}\n`+
                         `⛅️<b>Wschód Słońca (jutro):</b> ${new Date(weatherData.daily.sunrise[1]!).toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" })}\n\n`+
                         `${getEmojiForValue(weatherData.daily.uv_index_max[0]!, uvThresholds)}️<b>Indeks UV:</b> ${weatherData.daily.uv_index_max[0]} ${weatherData.daily.units.uv_index_max}\n\n`+
-                        `${getEmojiForValue(weatherData.current.wind_speed, windThresholds)}️<b>Prędkość Wiatru</b> ${weatherData.current.wind_speed} ${weatherData.current.units.wind_speed_10m}\n\n`+
+                        `${getEmojiForValue(weatherData.current.wind_speed, windThresholds)}️<b>Prędkość Wiatru:</b> ${weatherData.current.wind_speed} ${weatherData.current.units.wind_speed_10m}\n\n`+
                         `🌡️ <b>Temperatura:</b>\n\n`+
                         `     ${getEmojiForValue(weatherData.current.temperature, temperatureThresholds)} <b>Teraz (${new Date().getHours()}:${new Date().getMinutes()}):</b> ${weatherData.current.temperature} ${weatherData.current.units.temperature_2m}\n\n` +
 
