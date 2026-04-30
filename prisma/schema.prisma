@@ -9,6 +9,6 @@ datasource db {
 
 model User {
   id              String @id
-  userId          Int    @unique
-  latestMessageId Int    @unique
+  userId          BigInt @unique
+  latestMessageId BigInt @unique
 }
