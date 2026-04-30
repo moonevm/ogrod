@@ -13,4 +13,6 @@ model User {
   latestMessageId BigInt @unique
 
   active Boolean @default(true)
+
+  createdAt DateTime @default(now())
 }
