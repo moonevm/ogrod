@@ -2,17 +2,6 @@ import axios from "axios"
 import {openai} from "./openai.ts";
 
 export default async function getWeatherData({ summarize = false }: { summarize?: boolean }) {
-    const params = {
-        latitude: process.env.LOCATION!.split(":")[0],
-        longitude: process.env.LOCATION!.split(":")[1],
-        daily: ["sunrise", "sunset", "uv_index_max"],
-        current: ["rain", "temperature_2m"],
-        hourly: ["temperature_2m"],
-        timezone: "auto",
-        past_days: 0,
-        forecast_days: 1,
-    }
-
     const data = (await axios.get(`https://api.open-meteo.com/v1/forecast?latitude=${process.env.LOCATION!.split(":")[0]}&longitude=${process.env.LOCATION!.split(":")[1]}&daily=sunrise,sunset,uv_index_max,rain_sum&hourly=temperature_2m&current=temperature_2m,wind_speed_10m&timezone=auto&past_days=0&forecast_days=7`)).data
 
     let summary = ""
