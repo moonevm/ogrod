@@ -12,7 +12,8 @@ model User {
   userId          BigInt @unique
   latestMessageId BigInt @unique
 
-  active Boolean @default(true)
+  active      Boolean      @default(true)
+  weatherLogs WeatherLog[]
 
   createdAt DateTime @default(now())
 }
@@ -22,6 +23,9 @@ model WeatherLog {
 
   summary     String
   weatherData Json
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
   createedAt DateTime @default(now())
 }
