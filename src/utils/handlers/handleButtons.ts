@@ -16,7 +16,7 @@ export async function handleButtons(bot: Telegraf) {
         const mod: ButtonModule = await import(`${dir}/${file}`);
         bot.action(mod.name, async (ctx) => {
             try {
-                await mod.handler(ctx);
+                void mod.handler(ctx);
             } catch (e) {
                 console.error(`Error in button [${mod.name}]:`, e);
             }
