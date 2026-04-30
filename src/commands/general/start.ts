@@ -1,5 +1,4 @@
 import { Context } from "telegraf";
-import { awaitMessage } from "../../utils/awaitMessage.ts";
 import {prisma} from "../../utils/prisma.ts";
 import generateId from "../../utils/generateId.ts";
 
