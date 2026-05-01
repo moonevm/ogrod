@@ -104,11 +104,14 @@ export async function handler(ctx: Context) {
             ])
         })
     } catch (e) {
-        await captureExceptionWithMetadata(e, {
-            location: "buttons/ai/askai.ts:main-handler",
-            telegrafContext: ctx,
-            extra: { userId: ctx.from?.id, weatherLogId: id.split("_")[1] },
-        })
+        if (e === "Replaced") return
+        if (e !== "Timeout" && e !== "User Cancelled") {
+            await captureExceptionWithMetadata(e, {
+                location: "buttons/ai/askai.ts:main-handler",
+                telegrafContext: ctx,
+                extra: { userId: ctx.from?.id, weatherLogId: id.split("_")[1] },
+            })
+        }
         return cancel()
     }
 }
