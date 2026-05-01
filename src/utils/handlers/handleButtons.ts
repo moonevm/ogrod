@@ -1,5 +1,6 @@
 import type { Telegraf, Context } from "telegraf";
 import path from "path";
+import { captureExceptionWithMetadata } from "../sentry.ts";
 
 interface ButtonModule {
     name: string | RegExp;
@@ -18,7 +19,11 @@ export async function handleButtons(bot: Telegraf) {
             try {
                 void mod.handler(ctx);
             } catch (e) {
-                console.error(`Error in button [${mod.name}]:`, e);
+                await captureExceptionWithMetadata(e, {
+                    location: `buttons/${mod.name}`,
+                    telegrafContext: ctx,
+                    extra: { userId: ctx.from?.id, buttonName: mod.name },
+                });
             }
         });
         names.push(String(mod.name));

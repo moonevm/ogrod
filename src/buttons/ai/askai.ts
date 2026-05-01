@@ -6,6 +6,7 @@ import {toFile} from "openai";
 import {prisma} from "../../utils/prisma.ts";
 import {formatWeatherData} from "../../utils/weather/formatWeatherData.ts";
 import getWeatherData from "../../utils/weather/getWeatherData.ts";
+import { captureExceptionWithMetadata } from "../../utils/sentry.ts";
 
 export const name = /^askai_(.+)$/
 
@@ -54,8 +55,13 @@ export async function handler(ctx: Context) {
 
                message = transcription.text
            } catch (e) {
+               await captureExceptionWithMetadata(e, {
+                   location: "buttons/ai/askai.ts:voice-transcription",
+                   telegrafContext: ctx,
+                   extra: { userId: ctx.from?.id, voiceFileId: voice.file_id },
+               })
                await cancel()
-                return await ctx.reply("🔴 Coś poszło nie tak")
+               return await ctx.reply("🔴 Coś poszło nie tak")
            }
         }
 
@@ -94,7 +100,12 @@ export async function handler(ctx: Context) {
                 { text: "🧑‍🌾 Powrót", callback_data: `askaiback_${id.split("_")[1]}` }
             ])
         })
-    } catch {
+    } catch (e) {
+        await captureExceptionWithMetadata(e, {
+            location: "buttons/ai/askai.ts:main-handler",
+            telegrafContext: ctx,
+            extra: { userId: ctx.from?.id, weatherLogId: id.split("_")[1] },
+        })
         return cancel()
     }
 }

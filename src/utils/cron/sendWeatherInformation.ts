@@ -4,6 +4,7 @@ import {prisma} from "../prisma.ts";
 import {Markup, Telegraf} from "telegraf";
 import {getEmojiForValue} from "../getEmojiForValue.ts";
 import {generateId} from "../generateId.ts";
+import { captureExceptionWithMetadata } from "../sentry.ts";
 
 const temperatureThresholds = [
     { max: 0, emoji: "🧊" },
@@ -104,6 +105,10 @@ export async function sendWeatherInformation(bot: Telegraf) {
                         }
                     })
                 } catch (e) {
+                    await captureExceptionWithMetadata(e, {
+                        location: "cron/sendWeatherInformation.ts:sendMessage",
+                        extra: { userId: user.userId, dbId: user.id },
+                    });
                     await prisma.user.update({ where: { id: user.id }, data: { active: false } })
                 }
             }
