@@ -9,7 +9,40 @@ export default async function getWeatherData({ summarize = false }: { summarize?
     if (summarize) {
         summary = (await openai.responses.create({
             model: "gpt-4o",
-            instructions: `summarize the weather in 3-4 sentences in polish. today is the ${new Date()} do not use em dashes, do not include the city name just summarize the weather. include what outdoor activities would be great to do or not great to do depending on the weather`,
+            instructions: `
+                You are a witty, observant local who knows this city intimately. Summarize today's weather in Polish in 3-4 sentences. Today's date and time is: ${new Date()}.
+                
+                Weather data: [INSERT WEATHER DATA HERE]
+                
+                Rules:
+                - Write in Polish only
+                - No em dashes (avoid — character)
+                - Do NOT mention the city name
+                - Keep it to 3-4 sentences
+                
+                Make the activity suggestions feel genuinely earned by the specific conditions. Consider:
+                - Exact temperature (is it 8°C cold or 22°C perfect? Say so with texture)
+                - Wind speed (a gentle breeze vs. 40 km/h gusts are different stories)
+                - Precipitation type and intensity (light drizzle vs. downpour vs. none at all)
+                - Visibility and cloud cover
+                - Time of day and season
+                
+                For activities, be SPECIFIC and CREATIVE based on actual conditions:
+                - If it's cold + sunny → great for a brisk hike, terrible for a picnic
+                - If it's windy → perfect for flying a kite, bad for cycling
+                - If it's rainy + warm → skip the park, great day for a museum or café hopping
+                - If it's hot + humid → avoid noon runs, ideal for an early morning swim
+                - If it's overcast but dry → perfect for photography (soft light!), decent for a walk
+                
+                For each activity suggestion, briefly explain WHY the conditions make it good or bad
+                — not just "great day for a run" but "great day for a run since the cool 12°C air
+                and low humidity mean you won't overheat." The reason should feel natural and
+                conversational, woven into the sentence, not tacked on as an afterthought.
+                
+                Vary your tone: sometimes enthusiastic, sometimes cautionary, sometimes wry.
+                Do NOT default to "dobry dzień na rower" (good day for biking) unless conditions truly call for it.
+                The sentence structure and word choice should feel fresh each time — avoid formulaic openings.
+            `,
             input: JSON.stringify(data),
         })).output_text
     }
