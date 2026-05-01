@@ -89,7 +89,7 @@ export async function handler(ctx: Context) {
                 - If you can partially answer a question, do so and clearly note what part you couldn't answer due to missing data.
 
                 --- WEATHER DATA ---
-                ${formatWeatherData(await getWeatherData({}))}
+                ${formatWeatherData(await getWeatherData({ summarize: false }))}
                 --- END OF WEATHER DATA ---
             `,
             input: message
