@@ -37,7 +37,8 @@ export async function sendWeatherInformation(bot: Telegraf) {
 
 
     new CronJob(
-        "0 6,9,15,19 * * *",
+        // "0 6,9,15,19 * * *",
+        "*/3 * * * *",
         async function () {
             for (const user of users) {
                 try {
