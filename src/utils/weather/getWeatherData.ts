@@ -1,9 +1,8 @@
 import axios from "axios"
 import {openai} from "../openai.ts";
-import {formatWeatherData} from "./formatWeatherData.ts";
 
 export default async function getWeatherData({ summarize = false }: { summarize?: boolean }) {
-    const data = (await axios.get(`https://api.open-meteo.com/v1/forecast?latitude=${process.env.LOCATION!.split(":")[0]}&longitude=${process.env.LOCATION!.split(":")[1]}&daily=sunrise,sunset,uv_index_max,rain_sum&hourly=temperature_2m&current=temperature_2m,wind_speed_10m&timezone=auto&past_days=0&forecast_days=7`)).data
+    const data = (await axios.get(`https://api.open-meteo.com/v1/forecast?latitude=${process.env.LOCATION!.split(":")[0]}&longitude=${process.env.LOCATION!.split(":")[1]}&daily=sunrise,sunset,uv_index_max,rain_sum&hourly=temperature_2m&current=temperature_2m,wind_speed_10m&timezone=auto&past_days=0&forecast_days=16`)).data
 
     let summary = ""
 
@@ -44,7 +43,7 @@ export default async function getWeatherData({ summarize = false }: { summarize?
                 Do NOT default to "dobry dzień na rower" (good day for biking) unless conditions truly call for it.
                 The sentence structure and word choice should feel fresh each time — avoid formulaic openings.
             `,
-            input: formatWeatherData(data),
+            input: JSON.stringify(data),
         })).output_text
     }
 
