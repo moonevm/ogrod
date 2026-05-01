@@ -88,6 +88,8 @@ export async function handler(ctx: Context) {
                 - Keep answers short and to the point unless the user asks for detail.
                 - If you can partially answer a question, do so and clearly note what part you couldn't answer due to missing data.
 
+                 Today is the ${new Date().toLocaleDateString("pl-PL")}
+
                 --- WEATHER DATA ---
                 ${formatWeatherData(weatherLog.weatherData)}
                 --- END OF WEATHER DATA ---
