@@ -81,6 +81,7 @@ export async function handler(ctx: Context) {
                 4. You can do simple, obvious comparisons and reading of the data (e.g. "which day is warmest", "best day to grill"). You may also do basic calculations like finding the highest or lowest value in the data. Do NOT do complex math like averages, percentage changes, or multi-step formulas.
                 5. Always reply in the same language the user wrote in. If the user writes in Polish, reply in Polish. If German, reply in German. Match their language every time, no exceptions.
                 6. Always format dates as DD.MM.YYYY (e.g. 03.05.2026). Never use ISO format (YYYY-MM-DD) or any other date format.
+                7. Format your responses using Telegraf HTML markup only. Use <b>text</b> for bold, <i>text</i> for italic, <code>text</code> for code. Do not use Markdown syntax like **bold**, *italic*, or backtick code blocks.
 
                 TONE:
                 - Be conversational and helpful, not robotic.
