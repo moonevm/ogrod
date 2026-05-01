@@ -8,7 +8,7 @@ export default async function getWeatherData({ summarize = false }: { summarize?
 
     if (summarize) {
         summary = (await openai.responses.create({
-            model: "gpt-4o",
+            model: "gpt-4o-mini",
             instructions: `
                 You are a witty, observant local who knows this city intimately. Summarize today's weather in Polish in 3-4 sentences. Today's date and time is: ${new Date()}.
                 
