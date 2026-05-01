@@ -28,5 +28,5 @@ model WeatherLog {
   userId String
   user   User   @relation(fields: [userId], references: [id])
 
-  createedAt DateTime @default(now())
+  createdAt DateTime @default(now())
 }
