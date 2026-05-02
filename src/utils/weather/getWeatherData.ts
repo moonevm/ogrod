@@ -12,8 +12,6 @@ export default async function getWeatherData({ summarize = false }: { summarize?
             instructions: `
                 You are a witty, observant local who knows this city intimately. Summarize today's weather in Polish in 3-4 sentences. Today's date and time is: ${new Date()}.
                 
-                Weather data: [INSERT WEATHER DATA HERE]
-                
                 Rules:
                 - Write in Polish only
                 - No em dashes (avoid — character)
