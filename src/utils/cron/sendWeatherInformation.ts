@@ -31,17 +31,15 @@ const uvThresholds = [
 ]
 
 export async function sendWeatherInformation(bot: Telegraf) {
-    const users = await prisma.user.findMany({ where: { active: true } })
-    if (users.length == 0) return
-
-    const weatherData = await getWeatherData({ summarize: true });
-
     new CronJob(
         "*/5 6,9,15,19,21 * * *",
         async function () {
-            for (const user of users) {
-                if (user.id !== "user-mDsIyGhsgbpBjuvJ") return
+            const users = await prisma.user.findMany({ where: { active: true } })
+            if (users.length == 0) return
 
+            const weatherData = await getWeatherData({ summarize: true });
+
+            for (const user of users) {
                 try {
                     await bot.telegram.deleteMessage(Number(user.userId), Number(user.latestMessageId))
                 } catch (e) {
