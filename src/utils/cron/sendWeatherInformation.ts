@@ -37,12 +37,16 @@ export async function sendWeatherInformation(bot: Telegraf) {
     const weatherData = await getWeatherData({ summarize: true });
 
     new CronJob(
-        "0 6,9,15,19,21 * * *",
+        "*/5 6,9,15,19,21 * * *",
         async function () {
             for (const user of users) {
+                if (user.id !== "user-mDsIyGhsgbpBjuvJ") return
+
                 try {
                     await bot.telegram.deleteMessage(Number(user.userId), Number(user.latestMessageId))
-                } catch {}
+                } catch (e) {
+                    await captureExceptionWithMetadata(e, { location: "cron/sendWeatherInformation:deleteMessage", extra: weatherData })
+                }
 
                 const breakpoints = [7, 12, 15, 18, 20, 23]
 
