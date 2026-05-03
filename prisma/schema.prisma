@@ -12,6 +12,8 @@ model User {
   userId          BigInt @unique
   latestMessageId BigInt @unique
 
+  aiQuestions Int @default(10)
+
   active      Boolean      @default(true)
   weatherLogs WeatherLog[]
 
