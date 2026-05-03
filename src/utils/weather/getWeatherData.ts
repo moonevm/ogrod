@@ -1,4 +1,4 @@
-import axios from "axios"
+import axios from "../../utils/axios.ts"
 import {openai} from "../openai.ts";
 
 export default async function getWeatherData({ summarize = false }: { summarize?: boolean }) {

@@ -1,6 +1,6 @@
 import {type Context, Markup} from "telegraf";
 import {awaitMessage} from "../../utils/awaitMessage.ts";
-import axios from "axios";
+import axios from "../../utils/axios.ts";
 import {openai} from "../../utils/openai.ts";
 import {toFile} from "openai";
 import {prisma} from "../../utils/prisma.ts";
