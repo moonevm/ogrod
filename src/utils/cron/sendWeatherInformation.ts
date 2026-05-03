@@ -30,7 +30,7 @@ const uvThresholds = [
     { max: Infinity, emoji: "☠️" },
 ]
 
-export async function sendWeatherInformation(bot: Telegraf) {
+export default async function sendWeatherInformation(bot: Telegraf) {
     new CronJob(
         "0 6,9,15,19,21 * * *",
         async function () {

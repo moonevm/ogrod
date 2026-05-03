@@ -2,10 +2,11 @@ import {CronJob} from "cron";
 import {Telegraf} from "telegraf";
 import {prisma} from "../prisma.ts";
 
-export async function resetAiQuestions(bot: Telegraf) {
+export default async function resetAiQuestions(bot: Telegraf) {
     new CronJob(
         "55 14 1 * *",
         async function () {
+            console.log("reset")
             await prisma.user.updateMany({ data: { aiQuestions: 10 } })
         },
         null,

@@ -6,7 +6,7 @@ export async function handleCronSchedules(bot: Telegraf) {
     const dir = path.join(import.meta.dir, "../cron");
 
     for await (const file of glob.scan(dir)) {
-        const mod = await import(`${dir}/${file}`);
-        mod(bot)
+        const mod = await import(path.join(dir, file));
+        mod.default(bot)
     }
 }
