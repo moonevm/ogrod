@@ -34,7 +34,7 @@ export async function handler(ctx: Context) {
     const [updatedUsers] = await prisma.user.updateManyAndReturn({ where: { userId: ctx.from!.id, aiQuestions: { gte: 1 } }, data: { aiQuestions: { decrement: 1 } } })
     if (!updatedUsers) {
         return ctx.editMessageText(
-            `⚠️ <b>Wyczerpałeś limit pytań AI na ten miesiąc.</b>\n\n`+
+            `⚠️ <b>Wyczerpałeś limit pytań SI na ten miesiąc.</b>\n\n`+
             `Limit odnawia się automatycznie <b>1. dnia każdego miesiąca</b>. Wróć wtedy i zadawaj pytania bez ograniczeń!`
             , {
             parse_mode: "HTML",
