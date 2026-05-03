@@ -84,7 +84,7 @@ export async function sendWeatherInformation(bot: Telegraf) {
                         {
                             parse_mode: "HTML",
                             ...Markup.inlineKeyboard([
-                                {text: "🤖 Zapytaj się SI", callback_data: "askai_" + weatherLogId}
+                                {text: `🤖 Zapytaj się SI (${user.aiQuestions})`, callback_data: "askai_" + weatherLogId}
                             ])
                         }
                     )

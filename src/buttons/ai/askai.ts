@@ -5,8 +5,7 @@ import {openai} from "../../utils/openai.ts";
 import {toFile} from "openai";
 import {prisma} from "../../utils/prisma.ts";
 import {formatWeatherData} from "../../utils/weather/formatWeatherData.ts";
-import getWeatherData from "../../utils/weather/getWeatherData.ts";
-import { captureExceptionWithMetadata } from "../../utils/sentry.ts";
+import {captureExceptionWithMetadata, captureMessageWithMetadata} from "../../utils/sentry.ts";
 
 export const name = /^askai_(.+)$/
 
@@ -22,11 +21,28 @@ export async function handler(ctx: Context) {
         })
     }
 
+    const revertQuestions = async () => {
+        await prisma.user.update({ where: { userId: ctx.from!.id, aiQuestions: { gte: 1 } }, data: { aiQuestions: { increment: 1 } } })
+    }
+
     const user = await prisma.user.findFirst({ where: { userId: ctx.from!.id } })
     if (!user) return
 
     const weatherLog = await prisma.weatherLog.findFirst({ where: { id: id.split("_")[1] } })
     if (!weatherLog) return
+
+    const [updatedUsers] = await prisma.user.updateManyAndReturn({ where: { userId: ctx.from!.id, aiQuestions: { gte: 1 } }, data: { aiQuestions: { decrement: 1 } } })
+    if (!updatedUsers) {
+        return ctx.editMessageText(
+            `⚠️ <b>Wyczerpałeś limit pytań AI na ten miesiąc.</b>\n\n`+
+            `Limit odnawia się automatycznie <b>1. dnia każdego miesiąca</b>. Wróć wtedy i zadawaj pytania bez ograniczeń!`
+            , {
+            parse_mode: "HTML",
+            ...Markup.inlineKeyboard([
+                { text: "🧑‍🌾 Powrót", callback_data: `askaiback_${id.split("_")[1]}` }
+            ])
+        })
+    }
 
     await ctx.editMessageText("<b>🤖 Pytania do SI</b>\n\nNapisz swoje pytanie na czacie, aby zapytać SI.", {
         parse_mode: "HTML",
@@ -55,6 +71,7 @@ export async function handler(ctx: Context) {
 
                message = transcription.text
            } catch (e) {
+               await revertQuestions()
                await captureExceptionWithMetadata(e, {
                    location: "buttons/ai/askai.ts:voice-transcription",
                    telegrafContext: ctx,
@@ -82,19 +99,30 @@ export async function handler(ctx: Context) {
                 5. Always reply in the same language the user wrote in. If the user writes in Polish, reply in Polish. If German, reply in German. Match their language every time, no exceptions.
                 6. Always format dates as DD.MM.YYYY (e.g. 03.05.2026). Never use ISO format (YYYY-MM-DD) or any other date format.
                 7. Format your responses using Telegraf HTML markup only. Use <b>text</b> for bold, <i>text</i> for italic, <code>text</code> for code. Do not use Markdown syntax like **bold**, *italic*, or backtick code blocks.
+                8. The User cannot answer back, do not respond with follow-up questions
 
                 TONE:
                 - Be conversational and helpful, not robotic.
                 - Keep answers short and to the point unless the user asks for detail.
                 - If you can partially answer a question, do so and clearly note what part you couldn't answer due to missing data.
 
-                 Today is the ${new Date().toLocaleDateString("pl-PL")}
+                 Today is the ${new Date().toLocaleDateString("pl-PL")} ${new Date().toLocaleDateString('en-USqq', { weekday: 'long' })}
 
                 --- WEATHER DATA ---
                 ${formatWeatherData(weatherLog.weatherData)}
                 --- END OF WEATHER DATA ---
             `,
             input: message
+        })
+
+        await captureMessageWithMetadata("AI Question Asked", {
+            location: "buttons/ai/askai.ts:airesponse",
+            telegrafContext: ctx,
+            extra: {
+                response,
+                message,
+                fileLink: voice?.file_id ? await ctx.telegram.getFileLink(voice.file_id) : null
+            }
         })
 
         await ctx.editMessageText(`<b>🤖 Odpowiedź SI</b>\n\n<code>${response.output_text}</code>`, {
@@ -112,6 +140,8 @@ export async function handler(ctx: Context) {
                 extra: { userId: ctx.from?.id, weatherLogId: id.split("_")[1] },
             })
         }
+
+        await revertQuestions()
         return cancel()
     }
 }
