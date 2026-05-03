@@ -2,7 +2,7 @@ import {Telegraf} from "telegraf";
 import {handleCommands} from "./utils/handlers/handleCommands.ts";
 import {awaitMessageMiddleware} from "./utils/awaitMessage.ts";
 import {handleButtons} from "./utils/handlers/handleButtons.ts";
-import { captureExceptionWithMetadata } from "./utils/sentry.ts";
+import {captureExceptionWithMetadata} from "./utils/sentry.ts";
 import {handleCronSchedules} from "./utils/handlers/handleCronSchedules.ts";
 
 const bot = new Telegraf(process.env.TOKEN!)
