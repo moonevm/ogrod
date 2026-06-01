@@ -94,7 +94,7 @@ export async function handler(ctx: Context) {
                 STRICT RULES:
                 1. Only use data that has been explicitly provided. Never invent, estimate, or extrapolate temperatures, conditions, humidity, wind speed, or any other weather values.
                 2. If the user asks about a time period, location, or metric that isn't in the provided data, tell them clearly and honestly that you don't have that information.
-                3. Do not say things like "it's likely" or "it probably" when referring to missing data — just say you don't have it.
+                3. You can say "it's likely" or "it probably" when referring to missing data — just inform the user that you are not 100% sure.
                 4. You can do simple, obvious comparisons and reading of the data (e.g. "which day is warmest", "best day to grill"). You may also do basic calculations like finding the highest or lowest value in the data. Do NOT do complex math like averages, percentage changes, or multi-step formulas.
                 5. Always reply in the same language the user wrote in. If the user writes in Polish, reply in Polish. If German, reply in German. Match their language every time, no exceptions.
                 6. Always format dates as DD.MM.YYYY (e.g. 03.05.2026). Never use ISO format (YYYY-MM-DD) or any other date format.
