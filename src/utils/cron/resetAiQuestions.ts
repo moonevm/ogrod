@@ -26,7 +26,10 @@ export default async function resetAiQuestions(bot: Telegraf) {
 
                 await bot.telegram.sendMessage(
                     Number(user.userId),
-                    "<b>Pytania zresetowane 🚀</b>"
+                    "<b>Pytania zresetowane 🚀</b>",
+                    {
+                        parse_mode: "HTML",
+                    }
                 )
 
                 await prisma.user.update({ data: { aiQuestions: 10, latestMessageId: latestMessage.message_id }, where: { id: user.id } })
