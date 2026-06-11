@@ -20,6 +20,7 @@
     "openmeteo": "^1.2.3",
     "pg": "^8.20.0",
     "prisma": "^7.8.0",
+    "socks-proxy-agent": "^10.1.0",
     "telegraf": "^4.16.3"
   }
 }

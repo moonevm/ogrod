@@ -31,92 +31,94 @@ const uvThresholds = [
 ]
 
 export default async function sendWeatherInformation(bot: Telegraf) {
-    new CronJob(
-        "0 6,9,15,19,21 * * *",
-        async function () {
-            const users = await prisma.user.findMany({ where: { active: true } })
-            if (users.length == 0) return
+    // new CronJob(
+    //     "0 6,9,15,19,21 * * *",
+    //     async function () {
+    //
+    //     },
+    //     null,
+    //     true,
+    //     "Europe/Berlin"
+    // )
 
-            const weatherData = await getWeatherData({ summarize: true });
+    const users = await prisma.user.findMany({ where: { active: true } })
+    if (users.length == 0) return
 
-            for (const user of users) {
-                try {
-                    await bot.telegram.deleteMessage(Number(user.userId), Number(user.latestMessageId))
-                } catch (e) {
-                    await captureExceptionWithMetadata(e, { location: "cron/sendWeatherInformation:deleteMessage", extra: weatherData })
+    const weatherData = await getWeatherData({ summarize: true });
+
+    for (const user of users) {
+        try {
+            await bot.telegram.deleteMessage(Number(user.userId), Number(user.latestMessageId))
+        } catch (e) {
+            await captureExceptionWithMetadata(e, { location: "cron/sendWeatherInformation:deleteMessage", extra: weatherData })
+        }
+
+        const breakpoints = [7, 12, 15, 18, 20, 23]
+
+        const weatherLogId = generateId({ prefix: "log" })
+
+        const messageContent =
+            `<b>🧑‍🌾 Informacja Pogodowa</b>\n\n` +
+            `🌤 <b>Zachód Słońca:</b> ${new Date(weatherData.daily.sunset[0]!).toLocaleTimeString("pl-PL", {
+                hour: "2-digit",
+                minute: "2-digit"
+            })}\n` +
+            `⛅ <b>Wschód Słońca (jutro):</b> ${new Date(weatherData.daily.sunrise[1]!).toLocaleTimeString("pl-PL", {
+                hour: "2-digit",
+                minute: "2-digit"
+            })}\n\n` +
+            `${getEmojiForValue(weatherData.daily.uv_index_max[0]!, uvThresholds)}️ <b>Indeks UV:</b> ${weatherData.daily.uv_index_max[0]} ${weatherData.daily.units.uv_index_max}\n\n` +
+            `${getEmojiForValue(weatherData.current.wind_speed, windThresholds)} <b>Prędkość Wiatru:</b> ${weatherData.current.wind_speed} ${weatherData.current.units.wind_speed_10m}\n\n` +
+            `🌡️ <b>Temperatura:</b>\n\n` +
+            `     ${getEmojiForValue(weatherData.current.temperature, temperatureThresholds)} <b>Teraz (${new Date().toLocaleTimeString("pl-PL", {
+                timeZone: "Europe/Berlin",
+                hour: "2-digit",
+                minute: "2-digit"
+            })}):</b> ${weatherData.current.temperature} ${weatherData.current.units.temperature_2m}\n\n` +
+
+            breakpoints.map((e) => {
+                const time = weatherData.hourly.time.indexOf(new Date(new Date().setHours(e, 0, 0, 0)).toISOString().slice(0, 16))
+
+
+                return `     <b>${getEmojiForValue(weatherData.hourly.temperature[time]!, temperatureThresholds)} ${e.toString().padStart(2, "0")}:00:</b> ${weatherData.hourly.temperature[time]} ${weatherData.hourly.units.temperature_2m}`
+            }).join("\n") +
+
+            `\n\n📰 <b>Podsumowanie SI:</b>\n` +
+            `<code>${weatherData.summary}</code>`
+
+        try {
+            const message = await bot.telegram.sendMessage(Number(user.userId), messageContent,
+                {
+                    parse_mode: "HTML",
+                    ...Markup.inlineKeyboard([
+                        {text: `🤖 Zapytaj się SI (${user.aiQuestions})`, callback_data: "askai_" + weatherLogId}
+                    ])
                 }
+            )
 
-                const breakpoints = [7, 12, 15, 18, 20, 23]
-
-                const weatherLogId = generateId({ prefix: "log" })
-
-                const messageContent =
-                    `<b>🧑‍🌾 Informacja Pogodowa</b>\n\n` +
-                    `🌤 <b>Zachód Słońca:</b> ${new Date(weatherData.daily.sunset[0]!).toLocaleTimeString("pl-PL", {
-                        hour: "2-digit",
-                        minute: "2-digit"
-                    })}\n` +
-                    `⛅ <b>Wschód Słońca (jutro):</b> ${new Date(weatherData.daily.sunrise[1]!).toLocaleTimeString("pl-PL", {
-                        hour: "2-digit",
-                        minute: "2-digit"
-                    })}\n\n` +
-                    `${getEmojiForValue(weatherData.daily.uv_index_max[0]!, uvThresholds)}️ <b>Indeks UV:</b> ${weatherData.daily.uv_index_max[0]} ${weatherData.daily.units.uv_index_max}\n\n` +
-                    `${getEmojiForValue(weatherData.current.wind_speed, windThresholds)} <b>Prędkość Wiatru:</b> ${weatherData.current.wind_speed} ${weatherData.current.units.wind_speed_10m}\n\n` +
-                    `🌡️ <b>Temperatura:</b>\n\n` +
-                    `     ${getEmojiForValue(weatherData.current.temperature, temperatureThresholds)} <b>Teraz (${new Date().toLocaleTimeString("pl-PL", {
-                        timeZone: "Europe/Berlin",
-                        hour: "2-digit",
-                        minute: "2-digit"
-                    })}):</b> ${weatherData.current.temperature} ${weatherData.current.units.temperature_2m}\n\n` +
-
-                    breakpoints.map((e) => {
-                        const time = weatherData.hourly.time.indexOf(new Date(new Date().setHours(e, 0, 0, 0)).toISOString().slice(0, 16))
-
-
-                        return `     <b>${getEmojiForValue(weatherData.hourly.temperature[time]!, temperatureThresholds)} ${e.toString().padStart(2, "0")}:00:</b> ${weatherData.hourly.temperature[time]} ${weatherData.hourly.units.temperature_2m}`
-                    }).join("\n") +
-
-                    `\n\n📰 <b>Podsumowanie SI:</b>\n` +
-                    `<code>${weatherData.summary}</code>`
-
-                try {
-                    const message = await bot.telegram.sendMessage(Number(user.userId), messageContent,
-                        {
-                            parse_mode: "HTML",
-                            ...Markup.inlineKeyboard([
-                                {text: `🤖 Zapytaj się SI (${user.aiQuestions})`, callback_data: "askai_" + weatherLogId}
-                            ])
+            await prisma.user.update({
+                where: { id: user.id },
+                data: {
+                    latestMessageId: message.message_id,
+                    weatherLogs: {
+                        create: {
+                            id: weatherLogId,
+                            weatherData: weatherData,
+                            summary: weatherData.summary,
+                            message: messageContent
                         }
-                    )
-
-                    await prisma.user.update({
-                        where: { id: user.id },
-                        data: {
-                            latestMessageId: message.message_id,
-                            weatherLogs: {
-                                create: {
-                                    id: weatherLogId,
-                                    weatherData: weatherData,
-                                    summary: weatherData.summary,
-                                    message: messageContent
-                                }
-                            }
-                        },
-                        select: {
-                            weatherLogs: true
-                        }
-                    })
-                } catch (e) {
-                    await captureExceptionWithMetadata(e, {
-                        location: "cron/sendWeatherInformation.ts:sendMessage",
-                        extra: { userId: user.userId, dbId: user.id },
-                    });
-                    await prisma.user.update({ where: { id: user.id }, data: { active: false } })
+                    }
+                },
+                select: {
+                    weatherLogs: true
                 }
-            }
-        },
-        null,
-        true,
-        "Europe/Berlin"
-    )
+            })
+        } catch (e) {
+            await captureExceptionWithMetadata(e, {
+                location: "cron/sendWeatherInformation.ts:sendMessage",
+                extra: { userId: user.userId, dbId: user.id },
+            });
+            await prisma.user.update({ where: { id: user.id }, data: { active: false } })
+        }
+    }
 }
